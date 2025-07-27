@@ -101,7 +101,7 @@ INPUT_FIELDS = {
 DATA_SOURCE_CONFIGS = {
     "storefront_in_workspace": {
         "name": "Storefront in Workspace",
-        "data_logic_module": "storefront_data",
+        "data_logic_module": "storefront_in_workspace",  # Changed from storefront_data to match SQL file name
         "inputs": ["workspace_id"],
         "description": "Export a list of all storefronts within a specified workspace."
     },
