@@ -1,421 +1,340 @@
 import streamlit as st
-from utils.helpers import initialize_session_state
 
-initialize_session_state()
-
-# Page Configuration: Set the look and feel
+# --- Cấu hình trang ---
 st.set_page_config(
-    page_title="Data Export Revolution | Freedom from Manual Exports",
-    page_icon="🚀",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    page_title="Your Data Export Survival Guide (Now 87% More Fun!)",
+    page_icon="🤪",
+    layout="wide"
 )
 
-# --- Custom CSS: Enhanced with more personality ---
-def load_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-load_css("assets/style.css")
-
-# Additional CSS for main page specific styling
+# --- CSS tùy chỉnh ---
 st.markdown("""
 <style>
-    .hero-stats {
-        background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(0, 255, 204, 0.1));
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 2rem 0;
-        text-align: center;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+    body {
+        font-family: 'Inter', sans-serif;
+        color: #e0e0e0;
     }
-    
-    .stat-number {
-        font-size: 3rem;
+
+    .st-emotion-cache-18ni7ap, .st-emotion-cache-h4xjwg {
+        display: none;
+    }
+
+    .main-title {
+        font-size: 4.0rem;
         font-weight: 900;
+        text-align: center;
         background: -webkit-linear-gradient(45deg, #ff007f, #00ffcc);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
+        padding: 0.2em 0;
     }
-    
-    .feature-grid {
-        /* Removed - using Streamlit columns instead */
-    }
-    
-    .feature-card {
-        background: linear-gradient(135deg, rgba(255, 0, 127, 0.05), rgba(0, 255, 204, 0.05));
-        border: 1px solid rgba(255, 0, 127, 0.2);
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: left;
-        transition: transform 0.3s ease;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-        border-color: rgba(0, 255, 204, 0.4);
-    }
-    
-    .testimonials {
-        background: linear-gradient(135deg, rgba(0, 255, 204, 0.1), rgba(255, 0, 127, 0.1));
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 2rem 0;
-    }
-    
-    .cta-section {
-        background: linear-gradient(135deg, #ff007f, #00ffcc);
-        border-radius: 20px;
-        padding: 3rem 2rem;
+
+    .sub-header {
         text-align: center;
-        margin: 3rem 0;
-        color: white;
+        font-size: 1.15rem;
+        color: #a1a1aa;
+        font-weight: 400;
+        max-width: 700px;
+        margin: 0 auto 2rem auto;
+        line-height: 1.6;
     }
     
-    .cta-section h2 {
-        color: white !important;
-        margin-bottom: 1rem;
+    h2, h3 {
+        font-weight: 700;
+        color: #ffffff;
+    }
+    
+    .highlight-box {
+        background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(0, 255, 204, 0.1));
+        border-left: 4px solid #00ffcc;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+    
+    .warning-box {
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 177, 43, 0.1));
+        border-left: 4px solid #ff6b6b;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+    
+    .tip-box {
+        background: linear-gradient(135deg, rgba(81, 207, 102, 0.1), rgba(34, 197, 94, 0.1));
+        border-left: 4px solid #51cf66;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Hero Section ---
-st.markdown("<h1 class='main-title'>The Data Export Revolution</h1>", unsafe_allow_html=True)
-st.markdown("<div class='sub-header'>Say goodbye to manual exports, endless waiting, and sad Slack DMs. Welcome to the future of self-service data liberation! 🎉</div>", unsafe_allow_html=True)
-
-# --- Hero Stats ---
-st.markdown("""
-<div class='hero-stats'>
-    <div style='display: flex; justify-content: space-around; flex-wrap: wrap;'>
-        <div>
-            <div class='stat-number'>2 min</div>
-            <div style='color: #a1a1aa;'>Average Export Time</div>
-        </div>
-        <div>
-            <div class='stat-number'>50k</div>
-            <div style='color: #a1a1aa;'>Max Rows Per Export</div>
-        </div>
-        <div>
-            <div class='stat-number'>24/7</div>
-            <div style='color: #a1a1aa;'>Self-Service Access</div>
-        </div>
-        <div>
-            <div class='stat-number'>0</div>
-            <div style='color: #a1a1aa;'>Human Bottlenecks</div>
-        </div>
+# --- Header ---
+st.markdown("<h1 class='main-title'>Your Data Export Survival Guide</h1>", unsafe_allow_html=True)
+st.markdown(
+    """
+    <div class='sub-header'>
+    🎉 Congratulations! You've stumbled upon the unicorn of data exports. No more awkward begging, no more "it's still processing" nightmares, no more sad carrier pigeons to Irvine! 🐦
+    <br><br>
+    This guide will transform you from a confused data peasant into a CSV-wielding wizard faster than you can say "WHERE clause". Buckle up, buttercup! 🚀✨
     </div>
-</div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
 st.divider()
 
-# The Origin Story (Enhanced)
-st.markdown("""
-    <div class='rant-box'>
-        <h3>📖 The Origin Story: How We Got Here</h3>
-        <p>
-            Picture this: It's 3 PM on a Saturday. You need data for Monday's presentation. You ping Irvine. 
-            Irvine is sleeping. You wait. You ping again. Irvine is having lunch. You wait more. 
-            By the time you get your data, it's Tuesday and your presentation is ancient history. 😅
-        </p>
-        <p>
-            Sound familiar? We've all been there. That's why <strong>this revolution was born</strong>.
-        </p>
-        <p>
-            No more begging. No more waiting. No more checking if Irvine is online. 
-            This tool puts the power back in your hands, where it belongs. 
-            Pull data directly from your laptop, phone, tablet - whatever floats your boat! 🚤
-        </p>
-        <p>
-            <strong>The best part?</strong> Irvine is just as happy as you are. He can finally focus on building cool stuff instead of being a human CSV generator. Win-win! 🎯
-        </p>
+# --- Quick Start ---
+st.header("🚀 Quick Start (For People Who Don't Read Manuals)")
+st.markdown(
+    """
+    <div class='highlight-box'>
+    <h3>🏃‍♂️ The "I Just Want My Data" Version:</h3>
+    1. Pick a report from the sidebar (eeny, meeny, miny, moe works fine)<br>
+    2. Enter Workspace ID + Storefront EID (yes, both are required - no, complaining won't change this)<br>  
+    3. Choose dates (not your birth date, the data dates)<br>
+    4. Click "Get Data" → Twiddle thumbs → Click "Export Full Data" → Download CSV<br>
+    5. Do a victory dance! 💃🕺
     </div>
-""", unsafe_allow_html=True)
+    """, 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
-# How It Works Section
-st.subheader("🎯 How It Works (The Magic Behind the Curtain)")
-st.write("") 
+# --- The Golden Rules ---
+st.header("🏆 The Sacred Commandments (Violate These and Face Digital Purgatory)")
 
-col1, col2, col3 = st.columns(3, gap="large")
+st.subheader("👑 Commandment #1: Thou Shalt Know Thy Numbers")
+st.markdown(
+    """
+    <div class='tip-box'>
+    <strong>Workspace ID</strong> 🏢: This magical number is your VIP pass to the data kingdom. If you don't know it, you're basically trying to enter a nightclub without being on the list. Ask your team lead, check your existing reports, or consult your local data shaman.
+    <br><br>
+    <strong>Storefront EID</strong> 🏬: These are your shop identities (not your life crisis identities). You can juggle multiple ones, but they MUST be from the same workspace family. Don't try to create some weird data family reunion with distant cousins from other workspaces! 
+    <br><br>
+    <strong>Pro Tip:</strong> Use the "Storefront in Workspace" report first - it's like a dating app, but for finding your perfect storefront matches! 💕
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
-with col1:
-    st.markdown("""
-        <div class='step-card'>
-            <div class='step-icon'>🎨</div>
-            <h3>1. Pick Your Poison</h3>
-            <p>Choose from our arsenal of 6 battle-tested reports. From keyword deep-dives to competition intel - we've got the data you crave.</p>
-        </div>
-    """, unsafe_allow_html=True)
+st.subheader("⏰ Commandment #2: The Sacred Date Range Rituals")
+st.markdown(
+    """
+    <div class='warning-box'>
+    <h4>🚨 BREAKING NEWS: Physics Still Applies to Data!</h4>
+    
+    <strong>1-2 storefronts:</strong> Maximum 60 days (like a good vacation)<br>
+    <strong>3-5 storefronts:</strong> Maximum 30 days (like a short vacation)<br>
+    <strong>More than 5:</strong> You're being greedy. Keep it under 30 days or our servers will stage a revolt! ⚔️
+    <br><br>
+    <strong>Why these limits exist?</strong> Because every query is like asking someone to move your entire apartment. Do it too often or ask for too much, and they'll pretend they never met you. Our servers have feelings too! 🥺💔
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
-with col2:
-    st.markdown("""
-        <div class='step-card'>
-            <div class='step-icon'>⚡</div>
-            <h3>2. Smart Preview</h3>
-            <p>Get a sneak peek at your data with our lightning-fast preview. No more blind downloads or nasty surprises. See exactly what you're getting! 👀</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("""
-        <div class='step-card'>
-            <div class='step-icon'>🚀</div>
-            <h3>3. Export & Conquer</h3>
-            <p>One click to rule them all. Clean, formatted CSV files ready for Excel, Python, or whatever analysis wizardry you have planned. ✨</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-st.divider()
-
-# Features Section
-st.subheader("✨ Why You'll Love This Tool")
-
-# Row 1
-col1, col2, col3 = st.columns(3, gap="large")
-
-with col1:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>🛡️ Built-in Safety</h4>
-            <p>Smart limits prevent server meltdowns and protect you from accidentally downloading the entire internet. The 50k row limit is your friend, not your enemy!</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>🎯 Laser-Precise Filters</h4>
-            <p>Device type, display type, date ranges, storefronts - filter like a pro and get exactly the data slice you need. No more sifting through irrelevant rows!</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>⚡ Lightning Fast</h4>
-            <p>From click to CSV in under 2 minutes (for most exports). Time that used to be measured in hours is now measured in coffee brewing time. ☕</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-# Row 2
-col1, col2, col3 = st.columns(3, gap="large")
-
-with col1:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>🧠 Remembers Your Preferences</h4>
-            <p>The tool learns your patterns and remembers your settings. Switch between reports without losing your workspace ID or date preferences. Smart!</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>📱 Works Everywhere</h4>
-            <p>Laptop, phone, tablet, smart fridge - okay maybe not the fridge, but you get the idea. Export data from anywhere, anytime. True freedom!</p>
-        </div>
-    """, unsafe_allow_html=True)
-
-with col3:
-    st.markdown("""
-        <div class='feature-card'>
-            <h4>🔄 Error Recovery</h4>
-            <p>Something went wrong? No panic! Smart error handling guides you back on track with helpful suggestions. Your data export journey doesn't end at the first hiccup.</p>
-        </div>
-    """, unsafe_allow_html=True)
+st.subheader("🛡️ Commandment #3: The 50,000 Row Apocalypse Prevention Act")
+st.markdown(
+    """
+    <div class='warning-box'>
+    <h4>⚖️ This Isn't a Guideline, It's the LAW!</h4>
+    
+    Try to export more than <strong>50,000 rows</strong> and the system will reject you faster than a bad Tinder profile! 💔🚫
+    <br><br>
+    <strong>Emergency Escape Plans:</strong><br>
+    • Shrink your date range (works 90% of the time, every time)<br>
+    • Pick fewer storefronts (less is more, darling)<br>
+    • Apply those optional filters like your life depends on it<br>
+    • Offer a sincere apology to the database gods with a premium coffee sacrifice ☕🙏<br>
+    <br>
+    <strong>Why 50k and not 50 million?</strong> Because we learned from the Great Server Meltdown of 2023. Never forget. Never again. 🕯️
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
-# Available Reports Section (Enhanced)
-st.subheader("🎪 Your Data Export Playground")
+# --- Advanced Features ---
+st.header("🎛️ Advanced Wizardry (For Those Who've Transcended Mortal Data Needs)")
 
-with st.expander("🛍️ **Storefront in Workspace** - The Phone Book", expanded=True):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** Getting your bearings, finding storefront IDs, onboarding new team members
-        
-        Think of this as your digital phone book. Need to know which storefronts belong to your workspace? 
-        This report has got your back. Super fast, no date range needed, just pure storefront intelligence.
-        
-        **Pro tip:** Start here if you're new to the tool or workspace!
-        """)
-    with col2:
-        st.info("⚡ **Lightning Fast**\n\nNo date filters needed")
+st.subheader("🔍 Optional Filters (The Secret Ingredients)")
+st.markdown(
+    """
+    <div class='highlight-box'>
+    Some reports come with fancy filters that make you feel like a data chef 👨‍🍳:
+    <br><br>
+    <strong>Device Type:</strong> Mobile (for thumb scrollers), Desktop (for serious business), or None (for the indecisive)<br>
+    <strong>Display Type:</strong> Paid (money talks), Organic (free as a bird), Top (showing off), or None (FOMO much?)<br>
+    <strong>Product Position:</strong> Specific rankings or None (because sometimes position doesn't matter 😉)<br>
+    <br>
+    <strong>Current Plot Twist:</strong> You can only pick one option per filter. It's like being forced to choose your favorite child, but hey, choosing "None" loves them all equally! 🤗
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
-with st.expander("🔬 **Keyword Lab** - The Discovery Engine", expanded=False):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** Keyword research, search volume analysis, discovery campaigns
-        
-        Your gateway to keyword goldmines! Discover high-potential keywords, analyze search volumes, 
-        and get the full performance breakdown - GMV, costs, clicks, impressions, the whole shebang.
-        
-        **What you'll get:** Keyword discovery data, estimated search volumes, performance metrics, competitor insights
-        """)
-    with col2:
-        st.success("🎯 **Most Popular**\n\nHigh-level insights")
-
-with st.expander("📈 **Keyword Performance** - The Analytics Powerhouse", expanded=False):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** Deep performance analysis, optimization decisions, advanced filtering
-        
-        The Swiss Army knife of keyword reports. Advanced filters let you slice and dice by device type, 
-        display type, and product position. Perfect for those "I need to understand WHY" moments.
-        
-        **What you'll get:** Share of search, conversion rates, detailed breakdowns, benchmark CPCs
-        """)
-    with col2:
-        st.warning("🎛️ **Advanced**\n\nMultiple filter options")
-
-with st.expander("📦 **Product Tracking** - The Product Whisperer", expanded=False):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** Product positioning, sales tracking, brand monitoring
-        
-        Keep tabs on your products like a hawk! See where your products rank, how they're performing, 
-        and get insights that help you optimize your product strategy.
-        
-        **What you'll get:** Product positioning data, sales performance, brand insights, competitive positioning
-        """)
-    with col2:
-        st.info("📊 **Strategic**\n\nProduct-focused data")
-
-with st.expander("🏟️ **Competition Landscape** - The Intel Report", expanded=False):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** Competitive analysis, market research, strategic planning
-        
-        Know thy enemy! This report gives you the competitive intelligence you need to stay ahead. 
-        See who's winning, who's losing, and where the opportunities lie.
-        
-        **What you'll get:** Competitor analysis, market share insights, positioning comparisons, strategic intel
-        """)
-    with col2:
-        st.error("🕵️ **Intel**\n\nCompetitive insights")
-
-with st.expander("🎯 **Storefront & Campaign Optimization** - The Performance Twins", expanded=False):
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.write("""
-        **Perfect for:** ROI analysis, budget optimization, performance reviews
-        
-        The dynamic duo of performance optimization! Get the metrics that matter - ROAS, CPC, GMV, costs. 
-        Everything you need to make data-driven decisions about your ad spend and storefront performance.
-        
-        **What you'll get:** GMV analysis, ROAS calculations, cost breakdowns, ROI insights, campaign performance
-        """)
-    with col2:
-        st.success("💰 **ROI-Focused**\n\nOptimization data")
+st.subheader("👀 The Preview Feature (Your Crystal Ball)")
+st.markdown(
+    """
+    <div class='tip-box'>
+    ALWAYS preview before you leap! It's like checking if your parachute works before jumping out of a plane 🪂:
+    <br><br>
+    ✅ First 500 rows (a delicious appetizer)<br>
+    ✅ Total estimated rows (the full meal deal)<br>
+    ✅ Column count (how many spreadsheet columns you'll need to scroll through)<br>
+    ✅ Query speed (faster than your morning coffee brewing?)<br>
+    <br>
+    If the preview looks suspicious, your full export will probably be a disaster movie. Trust your gut, it's usually smarter than your brain! 🧠➡️❤️
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
 
 st.divider()
 
-# Testimonials Section (Fun & Fake)
+# --- The Export Process ---
+st.header("🎯 The Sacred Export Ritual (Follow These Steps or Face Data Chaos)")
+
+st.markdown("### Step 1: Form Filling Like a Boss")
 st.markdown("""
-<div class='testimonials'>
-<h3>🗣️ What People Are Saying (Totally AI Real Reviews)</h3>
+- **Red asterisk fields (*)** are like taxes - unavoidable and mandatory 💸
+- **Optional fields** are like dessert - nice to have but you won't die without them 🍰
+- **Red error messages** are like your mom telling you to clean your room - ignore them at your own peril 👩
+""")
 
-<blockquote>
-"I used to spend 3 hours a day waiting for data exports. Now I spend 3 minutes. 
-I've rediscovered what sunlight looks like!" - Sarah, Marketing Analyst
-</blockquote>
+st.markdown("### Step 2: Preview Your Digital Masterpiece")
+st.markdown("""
+Hit that "🚀 Get Data" button and watch the magic unfold like a beautiful Excel sheet sunrise:
+- Green success messages = You're winning at life ✅🎉
+- Red error messages = Time to panic... just kidding, just read and fix them ❌😅
+- The summary box is like a movie trailer - it tells you everything without spoilers!
+""")
 
-<blockquote>
-"This tool is so fast, I thought it was broken the first time I used it. 
-Spoiler alert: it wasn't. It's just that good." - Mike, Data Scientist
-</blockquote>
-
-<blockquote>
-"Finally, a tool that understands my need for instant gratification. 
-My therapy bills have never been lower!" - Jenny, Business Intelligence
-</blockquote>
-
-<blockquote>
-"I no longer have nightmares about manual data exports. 
-5 stars, would recommend to my worst enemy." - Alex, Performance Marketing
-</blockquote>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("### Step 3: Export Like the Data Legend You Are")
+st.markdown("""
+If your preview doesn't make you cry tears of despair:
+- Smash that "🚀 Export Full Data" button like it owes you money
+- Practice your patience (meditation apps recommended) 🧘‍♀️
+- When "📥 Download CSV Now" appears, click it faster than Black Friday shoppers
+- Celebrate like you just won the lottery! 🎊🥳
+""")
 
 st.divider()
 
-# Pro Tips Section
-st.subheader("💡 Pro Tips from the Data Export Veterans")
+# --- Troubleshooting ---
+st.header("🔧 When Everything Goes Horribly Wrong (The Murphy's Law Section)")
 
-col1, col2 = st.columns(2)
+st.subheader("😱 Common Disasters & How to Survive Them")
 
-with col1:
+with st.expander("❌ \"No data found\" (AKA The Digital Tumbleweeds)", expanded=False):
     st.markdown("""
-    ### 🎯 **Efficiency Hacks**
-    - **Start small, scale up**: Test with 1 storefront and 7 days first
-    - **Use preview religiously**: It's free and saves you from bad exports
-    - **Bookmark this page**: You'll be back (they always come back)
-    - **Name your files**: Future you will thank present you
+    **Translation:** Your data is playing hide and seek, and it's really good at it.
+    
+    **Survival Tactics:**
+    - Expand your date range (cast a wider net)
+    - Remove those picky optional filters  
+    - Double-check your IDs (typos happen to the best of us)
+    - Try dates when you KNOW stuff happened (like Black Friday, not your cousin's birthday)
     """)
 
-with col2:
+with st.expander("🚫 \"Data too large\" (AKA The Digital Buffet Overflow)", expanded=False):
     st.markdown("""
-    ### 🛡️ **Avoid Common Pitfalls**
-    - **Check date ranges**: More storefronts = shorter date range allowed
-    - **Watch the row count**: 45k rows? You're playing with fire! 🔥
-    - **Validate inputs**: Red error messages are not suggestions
-    - **Read the summary**: It tells you everything you need to know
+    **Translation:** You've ordered the entire restaurant menu, and the kitchen is on fire.
+    
+    **Damage Control (ranked by effectiveness):**
+    1. **Shrink that date range** - Most effective, like Marie Kondo for data
+    2. **Fewer storefronts** - Quality over quantity, my friend
+    3. **Add filters** - Be pickier than a food critic
+    4. **Split the export** - Divide and conquer, like Caesar (but with less stabbing)
     """)
 
+with st.expander("⚡ \"Database Connection Error\" (AKA The Digital Apocalypse)", expanded=False):
+    st.markdown("""
+    **Translation:** The database is having an existential crisis.
+    
+    **Emergency Response Protocol:**
+    - Count to 30 (slowly, with feeling)
+    - Try again (maybe the database just needed a moment)
+    - If it persists, alert the tech cavalry
+    - Check if others are experiencing the same digital despair
+    - Final resort: Sacrifice a rubber duck to the SQL gods 🦆⚡
+    """)
+
+with st.expander("🐛 \"Unexpected error\" (AKA The Plot Twist Nobody Asked For)", expanded=False):
+    st.markdown("""
+    **Translation:** Something so weird happened that even our error messages are confused.
+    
+    **Plot Armor Strategies:**
+    - Hit that "🔄 Start New Export" button (the digital equivalent of turning it off and on again)
+    - Try different parameters (maybe the universe just doesn't like your current choices)
+    - If it keeps happening, screenshot everything and send an SOS to tech support
+    - Remember: Your data is safer than your browser history!
+    """)
+
+
 st.divider()
 
-# Call to Action
-st.markdown("""
-<div class='cta-section'>
-    <h2>Ready to Join the Data Export Revolution? 🚀</h2>
-    <p style='font-size: 1.2rem; margin-bottom: 2rem;'>
-        Stop waiting, start exporting. Your data is just three clicks away.
-    </p>
-    <p style='font-size: 1rem; color: rgba(255,255,255,0.9);'>
-        👈 Pick a report from the sidebar and experience the magic for yourself!
-    </p>
-</div>
-""", unsafe_allow_html=True)
+# --- Support ---
+st.header("🆘 SOS Protocol (When All Hope Is Lost)")
 
-# Fun Footer
+st.markdown(
+    """
+    <div class='warning-box'>
+    <h4>🚨 Before You Disturb the Peace, Did You:</h4>
+    
+    1. ✅ Actually read this guide (skimming doesn't count)?<br>
+    2. ✅ Try the magical "🔄 Start New Export" button?<br>
+    3. ✅ Wait 30 seconds while contemplating your life choices?<br>
+    4. ✅ Ask literally anyone else first (your dog doesn't count)?<br>
+    5. ✅ Take three deep breaths and question your existence?<br>
+    <br>
+    <strong>Only if you've achieved enlightenment through all five steps,</strong> then you may summon <strong>IrvineCao</strong> from his data cave 🧙‍♂️. 
+    <br><br>
+    Please bring offerings:<br>
+    • A detailed confession of what you were attempting<br>
+    • Visual evidence (screenshots) of your digital crimes<br>
+    • Your workspace ID and date range details<br>
+    • A heartfelt apology letter to Irvine (bonus points for haikus) 📝<br>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
 st.divider()
-st.markdown("""
-<div style='text-align: center; color: #a1a1aa; padding: 2rem;'>
-    <p>🎉 Built with love, coffee, and the burning desire to never manually export data again.</p>
-    <p>Questions? Check the <strong>Help</strong> page first, then proceed with caution to Irvine's DMs. 😄</p>
-    <p><em>"OH MY GOD ARE YOU SERIOUS? YOU CAN'T DO THAT. THAT’S NOT ALLOWED. THIS IS NOT FPL, THIS IS A MAJOR"</em> - Anonymous Data Analyst, 2025</p>
-</div>
-""", unsafe_allow_html=True)
 
-# Easter eggs
-if st.button("🎁 Daily Motivation", help="Need some encouragement?"):
-    motivational_quotes = [
-        "Today's data export will be your best data export! 📊✨",
-        "You're not just exporting data, you're exporting dreams! 🌟",
-        "Every CSV tells a story. What story will yours tell? 📖",
-        "Data doesn't export itself, but with this tool, it almost does! 🤖",
-        "You're 50,000 rows away from greatness! (But please stay under that limit) 🎯"
-    ]
-    import random
-    st.success(random.choice(motivational_quotes))
+# --- Fun Closing ---
+st.header("🎉 Congratulations, Data Padawan!")
 
-# Stats counter (fake but fun)
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    st.metric("Happy Users", "∞", help="We lost count after 10")
-with col2:
-    st.metric("CSV Files Generated", "1,337,420", "📈 +69 today")
-with col3:
-    st.metric("Hours Saved", "42,000", "⏰ Collective time saved")
-with col4:
-    st.metric("Irvine's Stress Level", "2/10", "📉 Much better!")
+st.markdown(
+    """
+    <div class='highlight-box'>
+    <h3>🏆 You Have Achieved Data Export Nirvana!</h3>
+    
+    Your newly acquired superpowers include:
+    <br>
+    ✨ Exporting data faster than Irvine can debug SQL queries<br>
+    ✨ Filter navigation skills that would impress a search engine<br>
+    ✨ Troubleshooting abilities stronger than Google's algorithm<br>
+    ✨ The power to make your colleagues both jealous and slightly afraid<br>
+    <br>
+    <strong>Final Words of Wisdom:</strong> With great CSV power comes great spreadsheet responsibility. Use this tool wisely, may your data always be clean, and may your exports never timeout at 99%! 📊✨🙏
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
+st.balloons()
+
+# --- Easter Egg ---
+if st.button("🎁 Mystery Button (Totally Not Suspicious)", help="What's the worst that could happen? 🤷‍♀️"):
+    st.success("🎉 BOOM! You found the secret button! You're now officially part of the Data Export Hall of Fame!")
+    st.markdown("**Conspiracy Theory:** This entire tool was built in exactly 2 weeks, fueled by an alarming amount of coffee ☕, late-night coding sessions, and the collective desperation of everyone who was tired of sliding into Irvine's DMs for data exports. True story! 😄")
+    st.markdown("**Fun Fact:** You're the 47th person to click this button. You're either very curious or very bored. Either way, we appreciate you! 🤗")
+    st.image("https://media.giphy.com/media/3oriNYQX2lC6dfW2Ji/giphy.gif", width=300)

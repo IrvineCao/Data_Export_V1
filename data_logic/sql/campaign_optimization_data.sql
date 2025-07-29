@@ -1,4 +1,5 @@
 select 
+    month(pfm.created_at) as month,
     camp.general_tag as campaign_tag,
     camp.country_code,
     camp.marketplace_code,
@@ -18,7 +19,6 @@ select
     camp.max_bidding_price,
     sum(pfm.click) as campaign_clicks,
     sum(pfm.impression) as campaign_impressions,
-    sum(pfm.click / pfm.impression) as campaign_cpc,
     sum(pfm.ads_gmv / pfm.cost) as campaign_roas,
     sum(pfm.cost / pfm.click) as cpc,
     sum(pfm.ads_gmv) as campaign_gmv,
@@ -27,9 +27,9 @@ from kw_discovery_storefront_workspace workspace
 join onsite_storefront ON onsite_storefront.id = workspace.storefront_id
 join ads_ops_storefront storefront on onsite_storefront.ads_ops_storefront_id = storefront.id
 join ads_ops_ads_campaigns camp on camp.storefront_id = storefront.id
-left join ads_ops_ads_campaigns_performance pfm on pfm.ads_campaign_id = camp.id
+join ads_ops_ads_campaigns_performance pfm on pfm.ads_campaign_id = camp.id
     and date(pfm.created_datetime) between :start_date and :end_date
 join global_company on storefront.global_company_id = global_company.id
 where workspace.workspace_id = :workspace_id
 and storefront.id in (:storefront_ids)
-group by camp.id
+group by camp.id, month(pfm.created_at)

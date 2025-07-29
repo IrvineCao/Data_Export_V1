@@ -10,11 +10,11 @@ from typing import List, Dict, Any, Tuple
 from datetime import date
 import time
 from datetime import datetime, timedelta
-from utils.helpers import trace_function_call
+from utils.core.helpers import trace_function_call
 from typing import Dict, Any, Tuple, Optional, List
-from utils.input_config import get_input_config, get_data_source_config, INPUT_FIELDS
-from utils.input_validator import validate_data_source_inputs, build_sql_params
-from utils.logic import load_data, convert_df_to_csv
+from utils.ui.input_config import get_input_config, get_data_source_config, INPUT_FIELDS
+from utils.validation.input_validator import validate_data_source_inputs, build_sql_params
+from utils.core.logic import load_data, convert_df_to_csv
 
 def create_dynamic_input_form(data_source: str) -> Tuple[Dict[str, Any], List[str]]:
     """
@@ -241,7 +241,7 @@ def create_action_buttons(data_source: str, input_values: Dict[str, Any], valida
             }
             
             # Import and call the refactored logic
-            from utils.logic import handle_export_process
+            from utils.core.logic import handle_export_process
             
             handle_export_process(data_source=data_source)
             st.rerun()

@@ -1,13 +1,13 @@
 import streamlit as st
 from dataclasses import dataclass
 from typing import List
-from utils.dynamic_ui import (
+from utils.ui.dynamic_ui import (
     create_dynamic_input_form, 
     display_validation_errors, 
     create_action_buttons, 
     display_data_exporter
 )
-from utils.helpers import display_call_trace
+from utils.core.helpers import display_call_trace
 
 @dataclass
 class TabPage:
@@ -50,7 +50,9 @@ PAGES = {
         icon="🤖",
         tabs=[
             TabPage(title="Storefront Optimization", data_source_key='storefront_optimization'),
-            TabPage(title="Campaign Optimization", data_source_key='campaign_optimization')
+            TabPage(title="Campaign Optimization", data_source_key='campaign_optimization'),
+            TabPage(title="Ads Object Optimization", data_source_key='ads_object_optimization'),
+            TabPage(title="Ads Placement Optimization", data_source_key='ads_placement_optimization', is_placeholder=True)
         ]
     ),
 }

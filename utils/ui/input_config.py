@@ -146,6 +146,20 @@ DATA_SOURCE_CONFIGS = {
         "data_logic_module": "campaign_optimization_data",
         "inputs": ["workspace_id", "storefront_ids", "date_range"],
         "description": "Export campaign optimization data"
+    },
+
+    "ads_object_optimization": {
+        "name": "Ads Object Optimization",
+        "data_logic_module": "ads_object_optimization_data",
+        "inputs": ["workspace_id", "storefront_ids", "date_range"],
+        "description": "Export ads object optimization data"
+    },
+
+    "ads_placement_optimization": {
+        "name": "Ads Placement Optimization",
+        "data_logic_module": "ads_placement_optimization_data",
+        "inputs": ["workspace_id", "storefront_ids", "date_range"],
+        "description": "Export ads placement optimization data"
     }
 }
 

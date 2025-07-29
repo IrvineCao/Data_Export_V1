@@ -7,8 +7,8 @@ to validate user inputs dynamically based on field definitions.
 
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, date
-from utils.input_config import get_input_config, get_data_source_config
-from utils.helpers import trace_function_call
+from utils.ui.input_config import get_input_config, get_data_source_config
+from utils.core.helpers import trace_function_call
 
 def validate_field_value(field_name: str, value: Any, context: Dict[str, Any] = None) -> List[str]:
     """

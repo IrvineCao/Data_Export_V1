@@ -1,557 +1,217 @@
-# 🚀 Data Export Tool - Self-Service Analytics Platform
+# Technical Documentation: Data Export Tool
 
-> **Revolutionizing data exports with configuration-driven architecture and convention-based automation**
+## 1. Project Overview
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.24+-red.svg)](https://streamlit.io)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-green.svg)](https://sqlalchemy.org)
-[![SingleStore](https://img.shields.io/badge/SingleStore-Compatible-purple.svg)](https://singlestore.com)
+This document provides a detailed technical overview of the Data Export Tool. The primary goal of this application is to provide a self-service portal for users to export formatted, clean datasets directly from the database without needing SQL knowledge or developer intervention.
 
-## 📖 **Overview**
-
-The Data Export Tool is a **self-service analytics platform** that empowers business users to export data independently without requiring SQL knowledge or developer intervention. Built with a revolutionary **configuration-driven + convention-based architecture**, it transforms the traditional 5-step manual process into an elegant 3-step automated workflow.
-
-### 🎯 **Problem Solved**
-
-**Before:** Data exports required developer intervention, manual SQL writing, and complex file management  
-**After:** Business users can export any dataset with just 3 clicks, no technical knowledge required  
-
-### 🏆 **Key Achievements**
-
-- ✅ **40% reduction** in development effort (5 steps → 3 steps)
-- ✅ **100% elimination** of boilerplate Python code through convention-based loading
-- ✅ **50+ concurrent users** supported with optimized database connection pooling
-- ✅ **Zero breaking changes** during architecture optimization
-- ✅ **Self-service capability** - no more waiting for developers
+- **Core Technology**: Python
+- **Framework**: Streamlit
+- **Key Libraries**: Pandas, SQLAlchemy, mysql-connector-python
 
 ---
 
-## ✨ **Features**
+## 2. Project Structure
 
-### 🎨 **For Business Users**
-- **🖱️ One-Click Exports**: Preview → Export → Download workflow
-- **📊 6 Pre-built Reports**: Keyword analytics, sales data, competition insights, and more
-- **🎛️ Smart Filters**: Date ranges, device types, storefronts, and custom parameters
-- **⚡ Lightning Fast**: Sub-2-minute exports with intelligent caching
-- **📱 Responsive Design**: Works on desktop, tablet, and mobile devices
-- **🛡️ Safe Limits**: Automatic 50k row limit prevents server overload
+The project follows a modular structure to separate concerns and improve maintainability.
 
-### 🛠️ **For Developers**
-- **⚙️ Configuration-Driven**: Add new reports by editing config files, no code changes
-- **🔄 Convention-Based Loading**: SQL files automatically detected and loaded
-- **🏗️ Modular Architecture**: Clean separation between UI, logic, and data layers
-- **📈 Production-Ready**: Connection pooling, caching, error handling, and monitoring
-- **🔧 Developer-Friendly**: Comprehensive debugging tools and error messages
-
-### 🚀 **Technical Highlights**
-- **Zero Boilerplate**: Eliminated 7 duplicate Python data modules through automation
-- **Smart Caching**: 3-layer caching strategy (DB queries, configs, SQL files)
-- **Dynamic UI**: Forms automatically generated from field configurations
-- **Scalable Database**: Optimized connection pooling supports 50+ concurrent users
-- **Robust Error Handling**: Graceful degradation with helpful error messages
+```
+/Export_data
+|-- .env                  # Environment variables (DB credentials)
+|-- main.py               # Main application entry point
+|-- requirements.txt      # Python dependencies
+|-- assets/               # CSS styles, images, etc.
+|-- data_logic/           # Data access layer
+|   |-- sql/              # Raw SQL query files
+|   |-- *.py              # Python modules to execute queries
+|-- pages/                # UI view files for each Streamlit page
+|-- utils/                # Core logic, configuration, and helpers
+|   |-- page_config.py    # Defines UI pages and tabs
+|   |-- input_config.py   # **CRITICAL**: Defines all inputs and data sources
+|   |-- dynamic_ui.py     # Dynamically generates UI components
+|   |-- logic.py          # Business logic, validation, and query parameter building
+|   |-- input_validator.py# Input validation functions
+|   |-- helpers.py        # Session state and other helper functions
+|   |-- db_connect.py     # Database connection handler
+```
 
 ---
 
-## 🏗️ **Architecture**
+## 3. Core Architecture: Configuration-Driven System
 
-### **Configuration-Driven + Convention-Based Design**
+The application is built on a **configuration-driven architecture**. The goal is to minimize code changes when adding new reports or input fields. The logic, UI, and validation are all dynamically generated based on a central set of configuration files, primarily `input_config.py`.
 
-```mermaid
-graph TB
-    A[User Selects Report] --> B[Page Config Lookup]
-    B --> C[Data Source Detection]
-    C --> D[Dynamic UI Generation]
-    D --> E[User Input & Validation]
-    E --> F[Convention-Based SQL Loading]
-    F --> G[Database Execution with Pooling]
-    G --> H[Intelligent Caching]
-    H --> I[Results Display & Export]
+### Key Components:
 
-    style A fill:#e1f5fe
-    style D fill:#f3e5f5
-    style F fill:#e8f5e8
-    style G fill:#fff3e0
-    style H fill:#fce4ec
-```
+1.  **`utils/input_config.py` (The Brain)**
+    - This is the most important file in the architecture.
+    - It contains a master dictionary `DATA_SOURCE_CONFIG` that maps a unique `data_source_key` (e.g., `"keyword_lab"`) to its entire configuration.
+    - Each configuration specifies:
+        - `data_logic_module`: The Python file in `data_logic/` responsible for fetching the data.
+        - `inputs`: A list of dictionaries, where each dictionary defines an input field for the UI (e.g., a date range picker, a text input).
+        - Each input definition includes its `name`, `label`, `type` (for validation), `required` status, and other UI-related properties.
 
-### **Project Structure**
+2.  **`utils/page_config.py` (The Skeleton)**
+    - Defines the structure of the application's pages and tabs that appear in the Streamlit sidebar.
+    - Each page or tab is mapped to a `data_source_key` from `input_config.py`. This link tells the application which configuration to use for a given page.
 
-```
-📁 Data_Export_Tool/
-├── 🎯 main.py                           # Application entry point
-├── 🎨 assets/style.css                  # Custom styling
-├── 📱 pages/                            # Streamlit pages
-│   ├── 1_Help.py                        # User documentation
-│   ├── 2_Storefront_in_Workspace.py     # Storefront discovery
-│   ├── 3_Keyword_Lab.py                 # Keyword analytics
-│   ├── 4_Digital_Shelf_Analytics.py     # Multi-tab analytics
-│   └── 5_Marketing_Automation.py        # Campaign & optimization data
-├── 🗃️ data_logic/
-│   └── 📄 sql/                          # ⭐ ONLY SQL files needed
-│       ├── keyword_lab_data.sql         # Business logic in SQL
-│       ├── keyword_lab_count.sql        # Row counting queries
-│       ├── storefront_optimization_*.sql
-│       └── ...
-└── 🧠 utils/                            # Core system logic
-    ├── ⚙️ input_config.py               # Master configuration hub
-    ├── 📋 page_config.py                # Page & tab definitions  
-    ├── 🎨 dynamic_ui.py                 # Automatic UI generation
-    ├── ⚡ logic.py                      # Convention-based magic
-    ├── ✅ input_validator.py            # Validation engine
-    ├── 🔌 database.py                   # Connection pool management
-    └── 🛠️ helpers.py                    # Utilities & session state
-```
+3.  **`utils/dynamic_ui.py` (The Face)**
+    - Reads the configurations from `page_config.py` and `input_config.py`.
+    - It dynamically renders the correct input form based on the `inputs` defined for the current page's `data_source_key`.
+    - It also handles the display of preview data and the download button.
 
-### **Revolutionary Convention-Based Loading**
+4.  **`utils/logic.py` (The Conductor)**
+    - Acts as the bridge between the UI and the data layer.
+    - It receives user inputs from the form, validates them against the rules in `input_config.py` (using `input_validator.py`), and builds the final parameter dictionary for the SQL query.
+    - **Crucially, it dynamically imports the correct `data_logic_module` at runtime based on the configuration in `input_config.py`. This eliminates the need for manual imports or mappings when adding new data sources.**
 
-**Before Optimization:**
+---
+
+## 4. Data Flow (End-to-End)
+
+Here is the step-by-step data flow for a typical user interaction:
+
+1.  **Page Load**: A user selects a page (e.g., "Marketing Automation"). The corresponding file in `pages/` is run.
+2.  **Render Page**: The page file calls `render_page(page_config)`.
+3.  **Get Config**: `render_page` identifies the `data_source_key` (e.g., `"storefront_optimization"`) from `page_config.py`.
+4.  **Generate UI**: `dynamic_ui.py` uses this key to look up the configuration in `input_config.py` and dynamically renders the required input form.
+5.  **User Input**: The user fills out the form and clicks "Preview Data".
+6.  **Validation & Param Building**: The inputs are sent to `logic.py`. It validates them and constructs a parameter dictionary (e.g., `{'workspace_id': 123, 'start_date': '2023-01-01', ...}`).
+7.  **Data Fetching**: `logic.py` dynamically imports the correct `data_logic_module` (e.g., `storefront_optimization_data`) using the configuration and calls its `get_data` function, passing the parameters.
+8.  **SQL Execution**: The `storefront_optimization_data.py` module reads the corresponding SQL query from `data_logic/sql/sf_opt_data.sql`, injects the parameters, and executes it against the database.
+9.  **Display Results**: The function returns a Pandas DataFrame, which is stored in the session state and displayed as a preview table by `dynamic_ui.py`.
+10. **Download**: If the user clicks "Download Full Report", the same process runs again but without a `LIMIT` clause in the SQL, and the resulting DataFrame is served as a CSV file.
+
+---
+
+## 5. How to Add a New Report (Developer Workflow)
+
+Adding a new data export page is straightforward. Thanks to the dynamic module loading in `utils/logic.py`, **you only need to add/modify configuration and SQL files.** No changes to the core Python logic in `utils/` are necessary.
+
+**Step 1: Create SQL Files**
+
+In `data_logic/sql/`, create two new SQL files for your new data source (e.g., `new_report`).
+
+-   `new_report_data.sql`: The main query. Use named parameters that match the `name` you will define in `input_config.py` (e.g., `:workspace_id`, `:start_date`).
+-   `new_report_count.sql`: A query to get the total row count for the preview (e.g., `SELECT count(*) ...`).
+
+**Step 2: Create Data Logic Module**
+
+In `data_logic/`, create a new Python file: `new_report_data.py`.
+This file should contain a dictionary that read the SQL files and execute them.
+
 ```python
-# Required manual Python module for each report
-data_logic/
-├── keyword_lab_data.py          # 20 lines of boilerplate
-├── product_tracking_data.py     # 20 lines of boilerplate  
-└── campaign_optimization_data.py # 20 lines of boilerplate
-```
+# data_logic/new_report_data.py
+from utils.config import PROJECT_ROOT
+import streamlit as st
 
-**After Optimization:**
-```python
-# Zero Python modules needed - auto-generated at runtime!
-data_logic/
-└── sql/
-    ├── keyword_lab_data.sql           # Business logic only
-    ├── keyword_lab_count.sql          # Row counting only
-    └── ...                            # Pure SQL, zero boilerplate
-```
+def _get_query_from_file(file_path: str) -> str:
+    """Helper function to read SQL file safely."""
+    path = PROJECT_ROOT / "data_logic" / "sql" / file_path
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError as e:
+        st.error(f"Query file not found: {path.resolve()}")
+        raise e
 
----
-
-## 🚀 **Quick Start**
-
-### **Prerequisites**
-- Python 3.8+
-- SingleStore/MySQL database access
-- Modern web browser
-
-### **Installation**
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/data-export-tool.git
-   cd data-export-tool
-   ```
-
-2. **Create virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment**
-   ```bash
-   # Create .env file
-   cp .env.example .env
-   
-   # Edit .env with your database credentials:
-   DB_HOST=your-database-host
-   DB_USER=your-username
-   DB_PASSWORD=your-password
-   DB_NAME=your-database
-   DB_PORT=3306
-   ```
-
-5. **Launch the application**
-   ```bash
-   streamlit run main.py
-   ```
-
-6. **Access in browser**
-   ```
-   http://localhost:8501
-   ```
-
-### **First Export in 60 Seconds**
-
-1. 🖱️ **Select Report**: Choose "Storefront in Workspace" from sidebar
-2. 📝 **Enter Workspace ID**: Input your workspace identifier  
-3. 🚀 **Export**: Click "Get Data" → "Export Full Data" → Download CSV
-4. 🎉 **Success**: Clean, formatted data ready for analysis!
-
----
-
-## 📊 **Available Reports**
-
-### **📱 Core Reports**
-
-| Report | Description | Key Use Cases |
-|--------|-------------|---------------|
-| **🛍️ Storefront in Workspace** | Directory of all storefronts | Onboarding, storefront discovery |
-| **🔬 Keyword Lab** | Keyword research & discovery | SEO planning, search volume analysis |
-| **📈 Keyword Performance** | Advanced keyword analytics | Performance optimization, ROI analysis |
-| **📦 Product Tracking** | Product positioning & sales | Inventory management, competitive analysis |
-| **🏟️ Competition Landscape** | Market intelligence | Competitive strategy, market share analysis |
-| **🎯 Storefront Optimization** | Performance metrics | Revenue optimization, efficiency analysis |
-| **🤖 Campaign Optimization** | Marketing campaign data | Ad spend optimization, ROAS analysis |
-
-### **🎛️ Advanced Features**
-
-- **Multi-tab Reports**: Single pages with multiple related datasets
-- **Smart Filters**: Device type, display type, product position, date ranges
-- **Preset Date Ranges**: Last 30 days, This month, Last month, Custom ranges
-- **Dynamic Validation**: Automatic limits based on data size and storefront count
-- **Export Previews**: See exactly what you're getting before full export
-
----
-
-## 🛠️ **For Developers**
-
-### **Adding New Reports - 3 Simple Steps**
-
-#### **Step 1: Create SQL Files**
-```bash
-# Create business logic in SQL
-touch data_logic/sql/sales_analytics_data.sql
-touch data_logic/sql/sales_analytics_count.sql
-```
-
-#### **Step 2: Add Configuration**
-```python
-# utils/input_config.py
-"sales_analytics": {
-    "name": "Sales Analytics",
-    "data_logic_module": "sales_analytics_data",  # Auto-generated!
-    "inputs": ["workspace_id", "storefront_ids", "date_range"]
+query_params = {
+    "data": _get_query_from_file("new_report_data.sql"),
+    "count": _get_query_from_file("new_report_count.sql")
 }
 
-# utils/page_config.py  
-"6_Sales_Analytics.py": Page(
-    title="Sales Analytics", 
-    icon="💰",
-    tabs=[TabPage(title="Sales Analytics", data_source_key='sales_analytics')]
-)
+def get_query(query_name: str) -> str:
+    """Gets a query by name from the pre-loaded dictionary."""
+    return query_params.get(query_name, "")
 ```
 
-#### **Step 3: Create Page File**
+**Step 3: Configure the Data Source**
+
+In `utils/input_config.py`, add a new entry to the `DATA_SOURCE_CONFIG` dictionary.
+
 ```python
-# pages/6_Sales_Analytics.py
+# utils/input_config.py
+DATA_SOURCE_CONFIG = {
+    # ... other sources
+    "new_report": {
+        "data_logic_module": "new_report_data",
+        "description": "Description for your new report.",
+        "inputs": [
+            # Define all required and optional inputs here
+            # Example:
+            {
+                "name": "workspace_id",
+                "label": "Workspace ID",
+                "type": "numeric",
+                "required": True,
+            },
+            {
+                "name": "date_range",
+                "label": "Select Date Range",
+                "type": "date_range",
+                "required": True,
+            }
+        ]
+    }
+}
+```
+
+**Step 4: Add the Page to the UI**
+
+In `utils/page_config.py`, add a new `Page` or `TabPage` object to the `PAGES` dictionary.
+
+```python
+# utils/page_config.py
+PAGES = {
+    # ... other pages
+    "new_report_page": Page(
+        title="My New Report",
+        icon="📊",
+        data_source_key="new_report"
+    )
+}
+```
+
+**Step 5: Create the Page File**
+
+In the `pages/` directory, create a new file (e.g., `6_New_Report.py`). The number prefix controls the order in the sidebar.
+
+```python
+# pages/6_New_Report.py
 import streamlit as st
-from utils.page_config import render_page, PAGES
-from utils.helpers import initialize_session_state, display_user_message
-import os
+from utils.page_config import PAGES, render_page
 
-initialize_session_state()
-display_user_message()
+st.set_page_config(layout="wide")
 
-script_name = os.path.basename(__file__)
-page_config = PAGES.get(script_name)
-
-if page_config:
-    render_page(page_config)
-else:
-    st.error(f"Page configuration for {script_name} not found.")
+page_config = PAGES["new_report_page"]
+render_page(page_config)
 ```
 
-**🎉 Done!** The system automatically:
-- ✅ Generates the Python data module
-- ✅ Creates dynamic UI forms
-- ✅ Handles validation and error checking
-- ✅ Manages database connections
-- ✅ Provides caching and optimization
-
-### **Available Input Field Types**
-
-```python
-# Reusable field definitions:
-"workspace_id"        # Required numeric input
-"storefront_ids"      # Comma-separated numeric inputs
-"date_range"          # Date range picker with presets
-"device_type"         # Dropdown: Mobile|Desktop|None
-"display_type"        # Dropdown: Paid|Organic|Top|None  
-"product_position"    # Dropdown: -1|4|10|None
-
-# Easy to extend with new field types!
-```
-
-### **Convention-Based File Naming**
-
-```bash
-# SQL Files (auto-detected):
-{data_source_key}_data.sql     # Main business query
-{data_source_key}_count.sql    # Row counting query
-
-# Page Files:
-{number}_{Title_Case}.py       # Streamlit page
-
-# Examples:
-sales_analytics_data.sql       ✅
-sales_analytics_count.sql      ✅  
-6_Sales_Analytics.py          ✅
-```
+That's it. The application will now dynamically generate the new page, form, and data export functionality.
 
 ---
 
-## ⚡ **Performance & Scalability**
-
-### **Database Connection Optimization**
-
-```python
-# Optimized connection pool configuration:
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    poolclass=QueuePool,
-    pool_size=30,              # 30 base connections
-    max_overflow=20,           # +20 overflow = 50 total
-    pool_timeout=60,           # 60s timeout for heavy queries
-    pool_recycle=1800,         # 30min connection refresh
-    pool_pre_ping=True         # Health checks
-)
-```
-
-**Capacity:** Supports 50+ concurrent users with room for growth
-
-### **3-Layer Caching Strategy**
-
-| Layer | Purpose | TTL | Impact |
-|-------|---------|-----|--------|
-| **SQL Query Cache** | Database results | 1 hour | 40-100x faster repeated queries |
-| **Configuration Cache** | Field definitions | Session | 100x faster UI generation |
-| **File Reading Cache** | SQL file content | Session | 4000x faster file access |
-
-### **Smart Query Optimization**
-
-- 🔍 **Row count checks** before export (prevents server overload)
-- 📋 **Preview mode** with LIMIT 500 (fast user feedback)
-- 🚀 **Full exports** only when needed (optimal resource usage)
-- ⚠️ **50k row limit** with helpful suggestions for data reduction
-
----
-
-## 🛡️ **Security & Reliability**
-
-### **Security Features**
-
-- 🔐 **Environment-based credentials** (no secrets in code)
-- 🛡️ **Parameterized queries** (SQL injection prevention)  
-- 🏢 **Workspace isolation** (users only see their data)
-- 🔒 **Read-only database access** (no data modification possible)
-- ✅ **Input validation** (prevents malformed requests)
-
-### **Error Handling & Recovery**
-
-- 📊 **Progressive error messages** with actionable suggestions
-- 🔄 **Automatic connection retry** with exponential backoff
-- 🚨 **Graceful degradation** during high load periods
-- 📝 **Comprehensive logging** for debugging and monitoring
-- 🛠️ **Debug mode** for development troubleshooting
-
-### **Production Readiness**
-
-- ⚡ **Connection pooling** for optimal database performance
-- 📈 **Horizontal scaling** ready (stateless design)
-- 🔍 **Health check endpoints** for monitoring
-- 📊 **Performance metrics** tracking
-- 🚨 **Alert thresholds** for proactive monitoring
-
----
-
-## 📈 **Monitoring & Maintenance**
-
-### **Built-in Health Checks**
-
-```python
-# Add to any page for monitoring:
-if st.button("📊 System Health"):
-    # Database connection pool status
-    pool_status = get_pool_status()
-    st.metric("Active Connections", f"{pool_status['checked_out']}/{pool_status['size']}")
-    
-    # Cache performance
-    cache_stats = get_cache_statistics()
-    st.metric("Cache Hit Ratio", f"{cache_stats['hit_ratio']:.1%}")
-    
-    # Query performance
-    st.metric("Avg Query Time", f"{get_avg_query_time():.2f}s")
-```
-
-### **Key Metrics to Monitor**
-
-- 🔌 **Database connections**: Active vs available
-- ⚡ **Query performance**: Execution times and cache hit ratios  
-- 👥 **User activity**: Concurrent users and export patterns
-- ❌ **Error rates**: Failed exports and timeout frequencies
-- 💾 **Resource usage**: Memory and CPU utilization
-
----
-
-## 🚧 **Development Workflow**
-
-### **Local Development Setup**
-
-```bash
-# 1. Environment setup
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# 2. Database connection
-cp .env.example .env
-# Edit .env with local database credentials
-
-# 3. Enable debug mode
-export DEBUG_MODE=true
-
-# 4. Run with hot reload
-streamlit run main.py --server.runOnSave true
-```
-
-### **Testing New Reports**
-
-```bash
-# 1. Create SQL files
-vim data_logic/sql/test_report_data.sql
-vim data_logic/sql/test_report_count.sql
-
-# 2. Add configuration  
-vim utils/input_config.py
-vim utils/page_config.py
-
-# 3. Create page file
-vim pages/99_Test_Report.py
-
-# 4. Test in browser
-# Navigate to Test Report page
-# Verify form generation, validation, and export
-```
-
-### **Debugging Tools**
-
-```python
-# Enable debug mode for detailed logging:
-st.session_state.debug_mode = True
-
-# View call trace:
-display_call_trace()
-
-# Check SQL file detection:
-validate_sql_file_detection()
-
-# Monitor database pool:
-pool_status = get_pool_status()
-```
-
----
-
-## 🎯 **Future Roadmap**
-
-### **Phase 1: Enhanced UX** 
-- 📊 **Interactive charts** in preview mode
-- 🔄 **Real-time export progress** indicators  
-- 📱 **Mobile-optimized** interface
-- 🌙 **Dark mode** support
-
-### **Phase 2: Advanced Analytics**
-- 📈 **Automated insights** and anomaly detection
-- 🤖 **AI-powered** query suggestions
-- 📊 **Custom dashboard** builder
-- 🔗 **API endpoints** for programmatic access
-
-### **Phase 3: Enterprise Features**
-- 👥 **Role-based access control** 
-- 📝 **Audit logging** and compliance reporting
-- 🏢 **Multi-tenant** support
-- ☁️ **Cloud deployment** options
-
----
-
-## 🤝 **Contributing**
-
-We welcome contributions! Here's how to get started:
-
-### **Quick Contributions**
-- 🐛 **Bug reports**: Create issues with detailed reproduction steps
-- 💡 **Feature requests**: Describe use cases and expected behavior  
-- 📚 **Documentation**: Improve README, add examples, fix typos
-- 🧪 **Testing**: Add test cases, report edge cases
-
-### **Development Contributions**
-
-1. **Fork the repository**
-2. **Create feature branch**: `git checkout -b feature/amazing-feature`
-3. **Follow conventions**: Use existing patterns for consistency
-4. **Add tests**: Ensure new code is well-tested
-5. **Update docs**: Include relevant documentation updates
-6. **Submit pull request**: Clear description of changes and motivation
-
-### **Code Style**
-- Follow existing patterns in the codebase
-- Use descriptive variable and function names
-- Add comments for complex business logic
-- Maintain the configuration-driven architecture principles
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 **Acknowledgments**
-
-- **Streamlit Team** for the amazing web app framework
-- **SQLAlchemy Team** for robust database abstraction
-- **SingleStore Team** for high-performance analytics database
-- **Python Community** for the incredible ecosystem
-
----
-
-## 📞 **Support**
-
-### **Getting Help**
-- 📖 **Documentation**: Check the built-in Help page in the application
-- 🐛 **Issues**: Create GitHub issues for bugs and feature requests
-- 💬 **Discussions**: Use GitHub Discussions for questions and ideas
-- 📧 **Contact**: Reach out to the development team for urgent matters
-
-### **Troubleshooting**
-
-**Common Issues:**
-
-❓ **"Database connection timeout"**  
-→ Check if database server is accessible and connection pool has capacity
-
-❓ **"No data found for selected criteria"**  
-→ Verify workspace ID and date range, try broader filters
-
-❓ **"Data is too large to export"**  
-→ Reduce date range or add more specific filters to get under 50k rows
-
-❓ **"Page configuration not found"**  
-→ Ensure page file name matches entry in page_config.py
-
----
-
-## 🎉 **Success Stories**
-
-> *"This tool reduced our data export time from hours to minutes. Our analysts can now focus on insights instead of waiting for data!"*  
-> — **Marketing Analytics Team**
-
-> *"The self-service capability eliminated our SQL bottleneck. Business users love the independence!"*  
-> — **Business Intelligence Team** 
-
-> *"Adding new reports used to take days of development. Now it's a 30-minute configuration task!"*  
-> — **Development Team**
-
----
-
-<div align="center">
-
-### Built with ❤️ for data-driven teams
-
-**[⭐ Star this repository](https://github.com/your-org/data-export-tool)** if it helped your team!
-
-</div>
+## 6. Environment Setup
+
+1.  **Clone the repository.**
+2.  **Create and activate a virtual environment:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Configure Environment Variables:**
+    - Create a `.env` file in the project root by copying `.env.example` (if it exists) or creating it from scratch.
+    - Fill in the database connection details:
+      ```
+      DB_HOST=your_host
+      DB_USER=your_user
+      DB_PASSWORD=your_password
+      DB_NAME=your_database
+      ```
+5.  **Run the application:**
+    ```bash
+    streamlit run main.py
+    ```

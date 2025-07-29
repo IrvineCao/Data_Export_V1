@@ -1,7 +1,7 @@
 import streamlit as st
-from utils.page_config import render_page
-from utils.page_config import PAGES
-from utils.helpers import initialize_session_state, display_user_message
+from utils.ui.page_config import render_page
+from utils.ui.page_config import PAGES
+from utils.core.helpers import initialize_session_state, display_user_message
 import os
 
 initialize_session_state()
