@@ -78,7 +78,7 @@ st.markdown("<h1 class='main-title'>Your Data Export Survival Guide</h1>", unsaf
 st.markdown(
     """
     <div class='sub-header'>
-    🎉 Congratulations! You've stumbled upon the unicorn of data exports. No more awkward begging, no more "it's still processing" nightmares, no more sad carrier pigeons to Irvine! 🐦
+    No more awkward begging, no more "it's still processing" nightmares, no more sad carrier pigeons to Irvine! 🐦
     <br><br>
     This guide will transform you from a confused data peasant into a CSV-wielding wizard faster than you can say "WHERE clause". Buckle up, buttercup! 🚀✨
     </div>
@@ -330,11 +330,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.balloons()
-
 # --- Easter Egg ---
 if st.button("🎁 Mystery Button (Totally Not Suspicious)", help="What's the worst that could happen? 🤷‍♀️"):
     st.success("🎉 BOOM! You found the secret button! You're now officially part of the Data Export Hall of Fame!")
     st.markdown("**Conspiracy Theory:** This entire tool was built in exactly 2 weeks, fueled by an alarming amount of coffee ☕, late-night coding sessions, and the collective desperation of everyone who was tired of sliding into Irvine's DMs for data exports. True story! 😄")
     st.markdown("**Fun Fact:** You're the 47th person to click this button. You're either very curious or very bored. Either way, we appreciate you! 🤗")
     st.image("https://media.giphy.com/media/3oriNYQX2lC6dfW2Ji/giphy.gif", width=300)
+    st.balloons()
