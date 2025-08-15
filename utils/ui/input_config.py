@@ -123,8 +123,8 @@ DATA_SOURCE_CONFIGS = {
     "product_tracking": {
         "name": "Product Tracking",
         "data_logic_module": "product_tracking_data",
-        "inputs": ["workspace_id", "storefront_ids", "date_range"],
-        "description": "Export product tracking data"
+        "inputs": ["workspace_id", "storefront_ids", "date_range", "device_type", "display_type"],
+        "description": "Export product tracking data with advanced filtering options"
     },
     
     "competition_landscape": {
