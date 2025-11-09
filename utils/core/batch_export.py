@@ -1,8 +1,8 @@
 """
 Batch Export Helper Functions
 
-This module provides functions to handle batch exporting of large datasets
-by splitting date ranges and properly re-aggregating metrics to avoid duplicates.
+Key insight: SQL queries already GROUP BY correctly, so we should NOT re-group
+during merge unless absolutely necessary. Just concatenate and drop exact duplicates.
 """
 
 from datetime import datetime, timedelta
@@ -39,240 +39,243 @@ def split_date_range_by_days(start_date: str, end_date: str, batch_days: int = 7
     return batches
 
 
-def merge_batches(dfs: List[pd.DataFrame], product = 'keyword_lab') -> pd.DataFrame:
+def get_merge_config(product: str) -> Tuple[List[str], Dict[str, Any]]:
     """
-    Merge KWL (Keyword Lab) batches and re-aggregate metrics.
-    Logic mirrors the notebook's merge keys and aggregation map.
+    Get merge keys and aggregation dictionary for each product type.
+    
+    CRITICAL: These keys MUST match the GROUP BY clause in SQL queries exactly!
+    
+    Args:
+        product: Product type identifier
+    
+    Returns:
+        Tuple of (merge_keys, agg_dict)
+    """
+    
+    configs = {
+        'keyword_lab': {
+            'merge_keys': ['keyword_id', 'storefront_sid', 'month'],
+            'agg_dict': {
+                'search_volume': 'sum',
+                'ads_gmv': 'sum',
+                'cost': 'sum',
+                'click': 'sum',
+                'impression': 'sum',
+                'ads_item_sold': 'sum',
+                'bidding_price': 'mean',
+                'suggested_bidding_price': 'mean',
+                'roas': 'mean',
+                'cr': 'mean',
+                'ctr': 'mean',
+                'cpc': 'mean',
+                'peak_day_ads_gmv': 'max',
+                'peak_day_bau_ads_gmv': 'max',
+                'company_competitor': 'max',
+                'product_competitor': 'max',
+                'storefront_competitor': 'max'
+            }
+        },
+        
+        'keyword_performance': {
+            'merge_keys': [
+                'keyword',
+                'storefront_name',
+                'marketplace_code',
+                'created_datetime',
+                'display_type',
+                'device_type',
+                'product_position'
+            ],
+            'agg_dict': {
+                'search_volume': 'mean',
+                'atc': 'max',
+                'cost': 'max',
+                'click': 'max',
+                'ads_order': 'max',
+                'conversion': 'max',
+                'direct_atc': 'max',
+                'direct_gmv': 'max',
+                'impression': 'max',
+                'active_skus': 'max',
+                'active_shops': 'max',
+                'direct_order': 'max',
+                'ads_item_sold': 'max',
+                'direct_item_sold': 'max',
+                'direct_conversion': 'max',
+                'escore': 'mean',
+                'ads_gmv': 'max',
+                'benchmark_CPC': 'mean',
+                'cpc': 'max'
+            }
+        },
+        
+        'product_tracking': {
+            'merge_keys': [
+                'keyword',
+                'keyword_id',
+                'product_name',
+                'marketplace_name',
+                'global_company_name',
+                'storefront_name',
+                'created_datetime'
+            ],
+            'agg_dict': {
+                'item_sold_LT': 'mean',
+                'selling_price': 'mean',
+                'item_sold_l30d': 'sum',
+                'product_slot': 'mean'
+            }
+        },
+        
+        'competition_landscape': {
+            'merge_keys': [
+                'global_company_name',
+                'storefront_name',
+                'created_datetime',
+                'marketplace_name',
+                'keyword',
+                'display_type',
+                'product_position',
+                'device_type'
+            ],
+            'agg_dict': {
+                'search_volume': 'mean',
+                'share_of_search': 'mean'
+            }
+        },
+        
+        'storefront_optimization': {
+            'merge_keys': [
+                'storefront_id',
+                'storefront_name',
+                'country_code',
+                'marketplace_code'
+            ],
+            'agg_dict': {
+                'gmv': 'sum',
+                'cost': 'sum',
+                'roas': 'mean',
+                'cpc': 'mean',
+                'click': 'sum',
+                'impression': 'sum',
+                'ads_order': 'sum',
+                'direct_gmv': 'sum',
+                'direct_ads_order': 'sum',
+                'direct_item_sold': 'sum',
+                'item_sold': 'sum'
+            }
+        },
+        
+        'campaign_optimization': {
+            'merge_keys': [
+                'campaign_name',
+                'storefront_name',
+                'country_code',
+                'marketplace_code',
+                'month'
+            ],
+            'agg_dict': {
+                'campaign_clicks': 'sum',
+                'campaign_impressions': 'sum',
+                'campaign_roas': 'mean',
+                'cpc': 'mean',
+                'campaign_gmv': 'sum',
+                'campaign_cost': 'sum'
+            }
+        },
+        
+        'ads_object_optimization': {
+            'merge_keys': [
+                'object_name',
+                'campaign_name',
+                'storefront_name',
+                'country_code',
+                'marketplace_code',
+                'month'
+            ],
+            'agg_dict': {
+                'object_clicks': 'sum',
+                'object_impressions': 'sum',
+                'object_roas': 'mean',
+                'object_cpc': 'mean',
+                'object_gmv': 'sum',
+                'object_cost': 'sum'
+            }
+        }
+    }
+    
+    if product not in configs:
+        raise ValueError(f"Invalid product: {product}. Available: {list(configs.keys())}")
+    
+    return configs[product]['merge_keys'], configs[product]['agg_dict']
+
+
+# def merge_batches(dfs: List[pd.DataFrame], product: str = 'keyword_lab') -> pd.DataFrame:
+#     """
+#     Merge batches using simple concatenation strategy.
+    
+#     IMPORTANT: SQL queries already do GROUP BY correctly, so we should NOT
+#     re-group here unless dealing with overlapping date ranges.
+    
+#     Strategy:
+#     1. Concatenate all DataFrames
+#     2. Drop exact duplicates (handles overlapping date ranges)
+#     3. Return merged result
+    
+#     Args:
+#         dfs: List of DataFrames to merge
+#         product: Product type identifier (used only for validation)
+    
+#     Returns:
+#         Merged DataFrame
+#     """
+#     if not dfs:
+#         return pd.DataFrame()
+#     if len(dfs) == 1:
+#         return dfs[0]    
+#     df = pd.concat(dfs, ignore_index=True)
+#     df_merged = df.drop_duplicates()
+    
+#     return df_merged
+
+
+def merge_batches(dfs: List[pd.DataFrame], product: str = 'keyword_lab') -> pd.DataFrame:
+    """
+    Alternative: Merge batches with explicit groupby (use only if needed).
+    
+    This should only be used if you have overlapping date ranges that create
+    partial duplicates (same keys but different metric values).
+    
+    Args:
+        dfs: List of DataFrames to merge
+        product: Product type identifier
+    
+    Returns:
+        Merged and re-aggregated DataFrame
     """
     if not dfs:
         return pd.DataFrame()
     if len(dfs) == 1:
         return dfs[0]
-    if product == 'keyword_lab':
-        df = pd.concat(dfs, ignore_index=True)
-
-        merge_keys = ['keyword_id', 'storefront_sid', 'month']
-
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'keyword_performance':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['keyword_id', 'storefront_sid', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'product_tracking':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['product_id', 'storefront_sid', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'competition_landscape':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['keyword_id', 'storefront_sid', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'storefront_optimization':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['storefront_sid', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'campaign_optimization':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['campaign_id', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'ads_object_optimization':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['ads_object_id', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    elif product == 'ads_placement_optimization':
-        df = pd.concat(dfs, ignore_index=True)
-        merge_keys = ['ads_placement_id', 'month']
-        agg_dict: Dict[str, Any] = {
-            'search_volume': 'sum',
-            'ads_gmv': 'sum',
-            'cost': 'sum',
-            'click': 'sum',
-            'impression': 'sum',
-            'ads_item_sold': 'sum',
-            'bidding_price': 'mean',
-            'suggested_bidding_price': 'mean',
-            'roas': 'mean',
-            'cr': 'mean',
-            'ctr': 'mean',
-            'cpc': 'mean',
-            'peak_day_ads_gmv': 'max',
-            'peak_day_bau_ads_gmv': 'max',
-            'company_competitor': 'max',
-            'product_competitor': 'max',
-            'storefront_competitor': 'max'
-        }
-    else:
-        raise ValueError(f"Invalid product: {product}")
-
-    # Add 'first' for other columns
-    other_cols = [c for c in df.columns if c not in merge_keys + list(agg_dict.keys())]
+    
+    df = pd.concat(dfs, ignore_index=True)
+    
+    merge_keys, agg_dict = get_merge_config(product)
+    
+    missing_keys = [k for k in merge_keys if k not in df.columns]
+    if missing_keys:
+        raise ValueError(
+            f"Merge keys not found in DataFrame: {missing_keys}\n"
+            f"Available columns: {df.columns.tolist()}"
+        )
+    
+    other_cols = [c for c in df.columns if c not in merge_keys and c not in agg_dict.keys()]
+    agg_dict_full = agg_dict.copy()
     for c in other_cols:
-        agg_dict[c] = 'first'
-
-    # Keep only merge keys that exist to avoid KeyError
-    group_keys = [k for k in merge_keys if k in df.columns]
-    if not group_keys:
-        # If keys are missing, return concatenated df as last resort
-        return df
-
-    df_merged = df.groupby(group_keys, as_index=False).agg(agg_dict)
+        agg_dict_full[c] = 'first'
+    
+    df_merged = df.groupby(merge_keys, as_index=False).agg(agg_dict_full)
     return df_merged
-
-
-# === Notebook-inspired helpers (generic, no UI/DB coupling) ===
-
-def split_month_range(start_date: str, end_date: str) -> List[Tuple[str, str]]:
-    """
-    Split an overall date range into calendar-month subranges.
-    Returns list of (month_start, month_end) as 'YYYY-MM-DD' strings.
-    """
-    start = datetime.strptime(start_date, '%Y-%m-%d').date()
-    end = datetime.strptime(end_date, '%Y-%m-%d').date()
-
-    # Normalize to the first day of the month
-    current = start.replace(day=1)
-    months: List[Tuple[str, str]] = []
-
-    while current <= end:
-        # Compute last day of current month
-        if current.month == 12:
-            next_month_first = current.replace(year=current.year + 1, month=1, day=1)
-        else:
-            next_month_first = current.replace(month=current.month + 1, day=1)
-        month_last = next_month_first - timedelta(days=1)
-
-        month_start = max(current, start)
-        month_end = min(month_last, end)
-
-        months.append((month_start.strftime('%Y-%m-%d'), month_end.strftime('%Y-%m-%d')))
-        current = next_month_first
-
-    return months
 
 
 def load_batches_via_function(
@@ -283,7 +286,7 @@ def load_batches_via_function(
     **kwargs: Any,
 ) -> List[pd.DataFrame]:
     """
-    Generic batch loader inspired by notebook logic.
+    Generic batch loader.
 
     Args:
         fetch_func: Callable accepting start_date, end_date (YYYY-MM-DD) and **kwargs, returns DataFrame
@@ -297,27 +300,29 @@ def load_batches_via_function(
     """
     batches = split_date_range_by_days(start_date, end_date, batch_days)
     results: List[pd.DataFrame] = []
+    
     for batch_start, batch_end in batches:
         df = fetch_func(start_date=batch_start, end_date=batch_end, **kwargs)
         if df is not None and isinstance(df, pd.DataFrame) and not df.empty:
             results.append(df)
+    
     return results
 
 
-def merge_and_reaggregate_by_config(dfs: List[pd.DataFrame], data_source: str) -> pd.DataFrame:
+def get_recommended_batch_size(num_storefronts: int, date_range_days: int) -> int:
     """
-    KWL-only entry point preserved for compatibility with existing calls.
+    Get recommended batch size based on number of storefronts and date range.
+    
+    Args:
+        num_storefronts: Number of storefronts
+        date_range_days: Total days in date range
+    
+    Returns:
+        Recommended batch size in days
     """
-    if data_source != 'keyword_lab':
-        raise ValueError("Only 'keyword_lab' is supported in batch_export module at this time.")
-    return merge_keyword_lab_batches(dfs)
-
-
-"""
-test code cho kwl: done
-test code cho keyword performance: not done
-test code cho product tracking: not done
-test code cho competition landscape: not done
-test code cho storefront optimization: not done
-test code cho storefront in workspace: not done
-"""
+    if num_storefronts <= 2:
+        return 14  # 2 weeks
+    elif num_storefronts <= 5:
+        return 7   # 1 week
+    else:
+        return 7   # 1 week for 5+ storefronts

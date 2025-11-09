@@ -116,21 +116,21 @@ DATA_SOURCE_CONFIGS = {
     "keyword_performance": {
         "name": "Keyword Performance",
         "data_logic_module": "keyword_performance_data",
-        "inputs": ["workspace_id", "storefront_ids", "date_range", "device_type", "display_type", "product_position"],
+        "inputs": ["workspace_id", "storefront_ids", "date_range", "display_type", "product_position"],
         "description": "Export keyword performance data with advanced filtering options"
     },
     
     "product_tracking": {
         "name": "Product Tracking",
         "data_logic_module": "product_tracking_data",
-        "inputs": ["workspace_id", "storefront_ids", "date_range", "device_type", "display_type"],
+        "inputs": ["workspace_id", "storefront_ids", "date_range", "display_type"],
         "description": "Export product tracking data with advanced filtering options"
     },
     
     "competition_landscape": {
         "name": "Competition Landscape",
         "data_logic_module": "competition_landscape_data",
-        "inputs": ["workspace_id", "date_range", "device_type", "display_type", "product_position"],
+        "inputs": ["workspace_id", "date_range", "display_type", "product_position"],
         "description": "Export competition landscape data with advanced filtering options"
     },
     

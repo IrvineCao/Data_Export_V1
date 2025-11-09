@@ -10,7 +10,6 @@ WITH filtered_storefront_data AS (
         AVG(storefront_a.search_volume) AS search_volume
     FROM metric_share_of_search_storefront AS storefront_a
     WHERE storefront_a.timing = 'daily'
-        AND (:device_type is null or storefront_a.device_type = :device_type)
         AND (:display_type is null or storefront_a.display_type = :display_type)
         AND (:product_position is null or storefront_a.product_position = :product_position)
         AND storefront_a.created_datetime BETWEEN :start_date AND :end_date

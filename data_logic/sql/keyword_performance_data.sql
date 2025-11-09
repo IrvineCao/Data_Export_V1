@@ -44,7 +44,6 @@ WITH dim_data AS (
       ON s.keyword_id = dim.dim_keyword_id 
       AND s.storefront_id = dim.storefront_id
   WHERE TRUE
-    AND (:device_type is null or s.device_type = :device_type)
   	AND (:display_type is null or s.display_type = :display_type)
   	AND (:product_position is null or s.product_position = :product_position)
     AND s.timing = 'daily'
