@@ -31,10 +31,10 @@ SQLALCHEMY_DATABASE_URL = (
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     poolclass=QueuePool,
-    pool_size=25,              # 🔄 2.5x increase (10 → 25)
-    max_overflow=15,           # 🔄 3x increase (5 → 15)  
-    pool_timeout=45,           # 🔄 Longer timeout (30 → 45s)
-    pool_recycle=1800,         # Keep same (30 min)
+    pool_size=25,
+    max_overflow=15,
+    pool_timeout=45,
+    pool_recycle=1800,
     pool_pre_ping=True 
 )
 
