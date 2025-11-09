@@ -78,9 +78,7 @@ st.markdown("<h1 class='main-title'>Your Data Export Survival Guide</h1>", unsaf
 st.markdown(
     """
     <div class='sub-header'>
-    No more awkward begging, no more "it's still processing" nightmares, no more sad carrier pigeons to Irvine! 🐦
-    <br><br>
-    This guide will transform you from a confused data peasant into a CSV-wielding wizard faster than you can say "WHERE clause". Buckle up, buttercup! 🚀✨
+    No more awkward begging, no more "it's still processing" nightmares. This guide will transform you from a confused data peasant into a CSV-wielding wizard faster than you can say "WHERE clause". Buckle up!
     </div>
     """,
     unsafe_allow_html=True
@@ -89,16 +87,16 @@ st.markdown(
 st.divider()
 
 # --- Quick Start ---
-st.header("🚀 Quick Start (For People Who Don't Read Manuals)")
+st.header("Quick Start (For People Who Don't Read Manuals)")
 st.markdown(
     """
     <div class='highlight-box'>
-    <h3>🏃‍♂️ The "I Just Want My Data" Version:</h3>
-    1. Pick a report from the sidebar (eeny, meeny, miny, moe works fine)<br>
-    2. Enter Workspace ID + Storefront EID (yes, both are required - no, complaining won't change this)<br>  
-    3. Choose dates (not your birth date, the data dates)<br>
-    4. Click "Get Data" → Twiddle thumbs → Click "Export Full Data" → Download CSV<br>
-    5. Do a victory dance! 💃🕺
+    <h3>The "I Just Want My Data" Version:</h3>
+    1. Pick a report from the sidebar<br>
+    2. Enter Workspace ID + Storefront EID (yes, both are required)<br>  
+    3. Choose dates<br>
+    4. Click "Get Data" → Click "Export Full Data" → Download CSV<br>
+    5. Celebrate!
     </div>
     """, 
     unsafe_allow_html=True
@@ -107,53 +105,53 @@ st.markdown(
 st.divider()
 
 # --- The Golden Rules ---
-st.header("🏆 The Sacred Commandments (Violate These and Face Digital Purgatory)")
+st.header("The Sacred Commandments (Violate These and Face Digital Purgatory)")
 
-st.subheader("👑 Commandment #1: Thou Shalt Know Thy Numbers")
+st.subheader("Commandment #1: Thou Shalt Know Thy Numbers")
 st.markdown(
     """
     <div class='tip-box'>
-    <strong>Workspace ID</strong> 🏢: This magical number is your VIP pass to the data kingdom. If you don't know it, you're basically trying to enter a nightclub without being on the list. Ask your team lead, check your existing reports, or consult your local data shaman.
+    <strong>Workspace ID:</strong> This magical number is your VIP pass to the data kingdom. If you don't know it, ask your team lead, check your existing reports, or consult your data documentation.
     <br><br>
-    <strong>Storefront EID</strong> 🏬: These are your shop identities (not your life crisis identities). You can juggle multiple ones, but they MUST be from the same workspace family. Don't try to create some weird data family reunion with distant cousins from other workspaces! 
+    <strong>Storefront EID:</strong> These are your shop identities. You can juggle multiple ones, but they MUST be from the same workspace family. Don't try to mix storefronts from different workspaces! 
     <br><br>
-    <strong>Pro Tip:</strong> Use the "Storefront in Workspace" report first - it's like a dating app, but for finding your perfect storefront matches! 💕
+    <strong>Pro Tip:</strong> Use the "Storefront in Workspace" report first to find your available storefronts.
     </div>
     """, 
     unsafe_allow_html=True
 )
 
-st.subheader("⏰ Commandment #2: The Sacred Date Range Rituals")
+st.subheader("Commandment #2: The Sacred Date Range Rituals")
 st.markdown(
     """
     <div class='warning-box'>
-    <h4>🚨 BREAKING NEWS: Physics Still Applies to Data!</h4>
+    <h4>BREAKING NEWS: Performance Still Matters!</h4>
     
-    <strong>1-2 storefronts:</strong> Maximum 60 days (like a good vacation)<br>
-    <strong>3-5 storefronts:</strong> Maximum 30 days (like a short vacation)<br>
-    <strong>More than 5:</strong> You're being greedy. Keep it under 30 days or our servers will stage a revolt! ⚔️
+    <strong>1-2 storefronts:</strong> Maximum 60 days<br>
+    <strong>3-5 storefronts:</strong> Maximum 30 days<br>
+    <strong>More than 5:</strong> Keep it under 30 days for optimal performance
     <br><br>
-    <strong>Why these limits exist?</strong> Because every query is like asking someone to move your entire apartment. Do it too often or ask for too much, and they'll pretend they never met you. Our servers have feelings too! 🥺💔
+    <strong>Why these limits exist?</strong> Because every query requires database resources. The system automatically splits large date ranges into batches for processing, but smaller ranges are always faster!
     </div>
     """, 
     unsafe_allow_html=True
 )
 
-st.subheader("🛡️ Commandment #3: The 50,000 Row Apocalypse Prevention Act")
+st.subheader("Commandment #3: Smart Batch Export Magic")
 st.markdown(
     """
-    <div class='warning-box'>
-    <h4>⚖️ This Isn't a Guideline, It's the LAW!</h4>
+    <div class='tip-box'>
+    <h4>Automatic Batch Processing - No Limits!</h4>
     
-    Try to export more than <strong>50,000 rows</strong> and the system will reject you faster than a bad Tinder profile! 💔🚫
+    Export datasets of any size! The system automatically splits your date range into manageable 7-day batches and merges everything seamlessly.
     <br><br>
-    <strong>Emergency Escape Plans:</strong><br>
-    • Shrink your date range (works 90% of the time, every time)<br>
-    • Pick fewer storefronts (less is more, darling)<br>
-    • Apply those optional filters like your life depends on it<br>
-    • Offer a sincere apology to the database gods with a premium coffee sacrifice ☕🙏<br>
+    <strong>How it works:</strong><br>
+    • Large exports are split into 7-day batches automatically<br>
+    • Each batch is processed independently for reliability<br>
+    • Metrics are properly re-aggregated to avoid duplicates<br>
+    • You get one clean, merged CSV file at the end<br>
     <br>
-    <strong>Why 50k and not 50 million?</strong> Because we learned from the Great Server Meltdown of 2023. Never forget. Never again. 🕯️
+    <strong>Why this is awesome:</strong> No more row limits, no more "data too large" errors, and metrics stay accurate even across multiple batches!
     </div>
     """, 
     unsafe_allow_html=True
@@ -162,19 +160,19 @@ st.markdown(
 st.divider()
 
 # --- Advanced Features ---
-st.header("🎛️ Advanced Wizardry (For Those Who've Transcended Mortal Data Needs)")
+st.header("Advanced Wizardry (For Those Who've Transcended Mortal Data Needs)")
 
-st.subheader("🔍 Optional Filters (The Secret Ingredients)")
+st.subheader("Optional Filters (The Secret Ingredients)")
 st.markdown(
     """
     <div class='highlight-box'>
-    Some reports come with fancy filters that make you feel like a data chef 👨‍🍳:
+    Some reports come with optional filters to narrow down your data:
     <br><br>
-    <strong>Device Type:</strong> Mobile (for thumb scrollers), Desktop (for serious business), or None (for the indecisive)<br>
-    <strong>Display Type:</strong> Paid (money talks), Organic (free as a bird), Top (showing off), or None (FOMO much?)<br>
-    <strong>Product Position:</strong> Specific rankings or None (because sometimes position doesn't matter 😉)<br>
+    <strong>Device Type:</strong> Mobile, Desktop, or None (for all devices)<br>
+    <strong>Display Type:</strong> Paid, Organic, Top, or None (for all types)<br>
+    <strong>Product Position:</strong> Specific rankings or None (for all positions)<br>
     <br>
-    <strong>Current Plot Twist:</strong> You can only pick one option per filter. It's like being forced to choose your favorite child, but hey, choosing "None" loves them all equally! 🤗
+    <strong>Note:</strong> You can only pick one option per filter. Choose "None" to see all options!
     </div>
     """, 
     unsafe_allow_html=True
@@ -200,38 +198,38 @@ st.markdown(
 st.divider()
 
 # --- The Export Process ---
-st.header("🎯 The Sacred Export Ritual (Follow These Steps or Face Data Chaos)")
+st.header("The Sacred Export Ritual (Follow These Steps or Face Data Chaos)")
 
 st.markdown("### Step 1: Form Filling Like a Boss")
 st.markdown("""
-- **Red asterisk fields (*)** are like taxes - unavoidable and mandatory 💸
-- **Optional fields** are like dessert - nice to have but you won't die without them 🍰
-- **Red error messages** are like your mom telling you to clean your room - ignore them at your own peril 👩
+- **Red asterisk fields (*)** are required and mandatory
+- **Optional fields** are nice to have but not required
+- **Red error messages** should be read and fixed before proceeding
 """)
 
 st.markdown("### Step 2: Preview Your Digital Masterpiece")
 st.markdown("""
-Hit that "🚀 Get Data" button and watch the magic unfold like a beautiful Excel sheet sunrise:
-- Green success messages = You're winning at life ✅🎉
-- Red error messages = Time to panic... just kidding, just read and fix them ❌😅
-- The summary box is like a movie trailer - it tells you everything without spoilers!
+Hit that "Get Data" button and watch the magic unfold:
+- Green success messages mean everything is working correctly
+- Red error messages need to be read and fixed
+- The summary box shows you preview information before export
 """)
 
 st.markdown("### Step 3: Export Like the Data Legend You Are")
 st.markdown("""
-If your preview doesn't make you cry tears of despair:
-- Smash that "🚀 Export Full Data" button like it owes you money
-- Practice your patience (meditation apps recommended) 🧘‍♀️
-- When "📥 Download CSV Now" appears, click it faster than Black Friday shoppers
-- Celebrate like you just won the lottery! 🎊🥳
+If your preview looks good:
+- Click "Export Full Data" button
+- Be patient while the system processes your export
+- Large datasets are automatically split into batches for reliability
+- When "Download CSV Now" appears, click it to download your file
 """)
 
 st.divider()
 
 # --- Troubleshooting ---
-st.header("🔧 When Everything Goes Horribly Wrong (The Murphy's Law Section)")
+st.header("When Everything Goes Horribly Wrong (The Murphy's Law Section)")
 
-st.subheader("😱 Common Disasters & How to Survive Them")
+st.subheader("Common Disasters & How to Survive Them")
 
 with st.expander("❌ \"No data found\" (AKA The Digital Tumbleweeds)", expanded=False):
     st.markdown("""
@@ -244,15 +242,19 @@ with st.expander("❌ \"No data found\" (AKA The Digital Tumbleweeds)", expanded
     - Try dates when you KNOW stuff happened (like Black Friday, not your cousin's birthday)
     """)
 
-with st.expander("🚫 \"Data too large\" (AKA The Digital Buffet Overflow)", expanded=False):
+with st.expander("\"Export taking too long\"", expanded=False):
     st.markdown("""
-    **Translation:** You've ordered the entire restaurant menu, and the kitchen is on fire.
+    **Translation:** Your export is processing but taking a while.
     
-    **Damage Control (ranked by effectiveness):**
-    1. **Shrink that date range** - Most effective, like Marie Kondo for data
-    2. **Fewer storefronts** - Quality over quantity, my friend
-    3. **Add filters** - Be pickier than a food critic
-    4. **Split the export** - Divide and conquer, like Caesar (but with less stabbing)
+    **What's happening:**
+    1. **Batch processing** - Large exports are automatically split into 7-day batches
+    2. **Patience** - Each batch is processed sequentially for reliability
+    3. **Progress tracking** - You'll see progress bars for each batch
+    
+    **Tips:**
+    - Smaller date ranges = faster exports
+    - Fewer storefronts = faster processing
+    - The system handles everything automatically, just be patient!
     """)
 
 with st.expander("⚡ \"Database Connection Error\" (AKA The Digital Apocalypse)", expanded=False):
@@ -282,7 +284,7 @@ with st.expander("🐛 \"Unexpected error\" (AKA The Plot Twist Nobody Asked For
 st.divider()
 
 # --- Support ---
-st.header("🆘 SOS Protocol (When All Hope Is Lost)")
+st.header("SOS Protocol (When All Hope Is Lost)")
 
 st.markdown(
     """

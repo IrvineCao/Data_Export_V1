@@ -348,13 +348,13 @@ def handle_export_process(data_source: str):
             st.session_state.stage = 'initial'
             return
             
-        elif int(num_row) > 50000:
-            st.session_state.user_message = {
-                "type": "error",
-                "text": f"Data is too large to export ({num_row:,} rows). Please narrow your selection to under 50,000 rows."
-            }
-            st.session_state.stage = 'blocked'  # Set to blocked state instead of initial
-            return
+        # elif int(num_row) > 50000:
+        #     st.session_state.user_message = {
+        #         "type": "error",
+        #         "text": f"Data is too large to export ({num_row:,} rows). Please narrow your selection to under 50,000 rows."
+        #     }
+        #     st.session_state.stage = 'blocked'  # Set to blocked state instead of initial
+        #     return
         else:
             # Data size is acceptable, proceed with loading preview
             st.session_state.stage = 'loading_preview'

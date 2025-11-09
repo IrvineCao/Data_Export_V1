@@ -1,8 +1,9 @@
 select keyword
+    , onsite_keyword.id as keyword_id
     , onsite_storefront.marketplace_code
     , onsite_storefront.country_code
     , storefront_name
-    , kw_discovery_storefront_keyword.storefront_id
+    , onsite_storefront.storefront_sid as storefront_sid
     , operational_status
     , category_name
     , active_skus
@@ -16,7 +17,7 @@ select keyword
     , note_1
     , note_2
     , kw_discovery_storefront_keyword.keyword_type
-    , month(created_datetime)
+    , month(created_datetime) as month
     , storefront_division
     , sum(est_daily_search_volume)  as search_volume
     , sum(ads_gmv)                  as ads_gmv
