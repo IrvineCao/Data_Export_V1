@@ -9,9 +9,8 @@ WITH product_metrics AS (
     created_datetime
   FROM metric_share_of_search_product product_a
   WHERE product_a.timing = 'daily'
-    AND product_a.device_type IN (:device_type)
-    AND product_a.display_type IN (:display_type)
-    AND created_datetime BETWEEN :start_date AND :end_date
+    AND display_type = 'Paid'
+    AND created_datetime BETWEEN '2025-10-10' AND '2025-11-08'
   GROUP BY
     DATE(created_datetime),
     product_a.keyword_id,
@@ -66,18 +65,19 @@ main_query AS (
   JOIN onsite_storefront s ON s.id = p.storefront_id
   LEFT JOIN global_company gc ON s.global_company_id = gc.id
 
-  WHERE ws.id = :workspace_id
---     and k.id = 2251799988004001
+  WHERE ws.id = 10
     AND kw_ws.status = 'ACTIVATED'
 )
 select count(1)
-from (SELECT
-  keyword_id,
-  date(created_datetime)
+from (SELECT 1
 FROM main_query
 where true
 and (product_name != 'Unspecified' and storefront_name != 'Unspecified')
 GROUP BY
+  keyword,
   keyword_id,
-  date(created_datetime)
-ORDER BY product_id, keyword_id, date(created_datetime))
+  product_name,
+  global_company_name,
+  storefront_name,
+  created_datetime
+ORDER BY product_id, keyword_id, created_datetime)

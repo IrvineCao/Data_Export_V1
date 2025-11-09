@@ -8,7 +8,7 @@ from utils.core.helpers import trace_function_call
 import importlib
 from utils.ui.input_config import DATA_SOURCE_CONFIGS
 from utils.config import PROJECT_ROOT
-
+from datetime import datetime
 
 
 def get_query_by_source(data_source: str):
@@ -383,3 +383,83 @@ def convert_df_to_csv(df: pd.DataFrame):
     output = StringIO()
     df.to_csv(output, index=False, encoding='utf-8-sig')
     return output.getvalue()
+
+
+@trace_function_call
+def load_data_with_batching(data_source: str, batch_days: int = 7, **sql_params):
+    """
+    Load data using batch processing for large date ranges.
+    
+    Args:
+        data_source: Data source key
+        batch_days: Number of days per batch
+        **sql_params: SQL parameters including start_date, end_date
+    
+    Returns:
+        Merged DataFrame
+    """
+    import streamlit as st
+    from utils.core.batch_export import (
+        split_date_range_by_days, 
+        merge_batches,
+        get_recommended_batch_size
+    )
+    
+    start_date = sql_params.get('start_date')
+    end_date = sql_params.get('end_date')
+    
+    if not start_date or not end_date:
+        st.error("Start date and end date are required for batch export")
+        return None
+    
+    # Get recommended batch size
+    storefront_ids = sql_params.get('storefront_ids', [])
+    num_storefronts = len(storefront_ids) if isinstance(storefront_ids, list) else 1
+    date_range_days = (datetime.strptime(end_date, '%Y-%m-%d').date() - 
+                       datetime.strptime(start_date, '%Y-%m-%d').date()).days + 1
+    
+    recommended_batch_days = get_recommended_batch_size(num_storefronts, date_range_days)
+    batch_days = min(batch_days, recommended_batch_days)
+    
+    # Split date range into batches
+    batches = split_date_range_by_days(start_date, end_date, batch_days)
+    
+    st.info(f"📦 Processing {len(batches)} batch(es) with {batch_days} days per batch...")
+    
+    # Progress bar
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    all_dfs = []
+    
+    for i, (batch_start, batch_end) in enumerate(batches):
+        status_text.text(f"Processing batch {i+1}/{len(batches)}: {batch_start} to {batch_end}")
+        
+        # Update SQL params with batch dates
+        batch_params = sql_params.copy()
+        batch_params['start_date'] = batch_start
+        batch_params['end_date'] = batch_end
+        
+        # Load data for this batch
+        df_batch = get_data("data", data_source, limit=None, **batch_params)
+        
+        if df_batch is not None and not df_batch.empty:
+            all_dfs.append(df_batch)
+        
+        # Update progress
+        progress_bar.progress((i + 1) / len(batches))
+    
+    progress_bar.empty()
+    status_text.empty()
+    
+    if not all_dfs:
+        st.warning("No data found in any batch")
+        return None
+    
+    # Merge all batches
+    st.info(f"🔄 Merging {len(all_dfs)} batch(es)...")
+    merged_df = merge_batches(all_dfs, product=data_source)
+    
+    st.success(f"✅ Successfully merged {len(merged_df):,} rows from {len(batches)} batch(es)")
+    
+    return merged_df

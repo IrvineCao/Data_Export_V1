@@ -9,8 +9,7 @@ WITH product_metrics AS (
     created_datetime
   FROM metric_share_of_search_product product_a
   WHERE product_a.timing = 'daily'
-    AND product_a.device_type IN (:device_type)
-    AND product_a.display_type IN (:display_type)
+    AND (:display_type is null or display_type = :display_type)
     AND created_datetime BETWEEN :start_date AND :end_date
   GROUP BY
     DATE(created_datetime),
@@ -67,7 +66,6 @@ main_query AS (
   LEFT JOIN global_company gc ON s.global_company_id = gc.id
 
   WHERE ws.id = :workspace_id
---     and k.id = 2251799988004001
     AND kw_ws.status = 'ACTIVATED'
 )
 
@@ -77,11 +75,11 @@ SELECT
   global_company_name,
   storefront_name,
   avg(historical_sold) AS item_sold_LT,
-  avg(selling_price),
+  avg(selling_price) as selling_price,
   sum(sold) AS item_sold_l30d,
-  avg(product_slot),
+  avg(product_slot) as product_slot,
   keyword_status AS kw_status,
-  date(created_datetime)
+  date(created_datetime) as created_datetime
 FROM main_query
 where true
 and (product_name != 'Unspecified' and storefront_name != 'Unspecified')
@@ -92,5 +90,5 @@ GROUP BY
   marketplace_name,
   global_company_name,
   storefront_name,
-  date(created_datetime)
-ORDER BY product_id, keyword_id, date(created_datetime)
+  created_datetime
+ORDER BY product_id, keyword_id, created_datetime

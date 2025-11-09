@@ -31,5 +31,6 @@ join ads_ops_ads_campaigns_performance pfm on pfm.ads_campaign_id = camp.id
     and date(pfm.created_datetime) between :start_date and :end_date
 join global_company on storefront.global_company_id = global_company.id
 where workspace.workspace_id = :workspace_id
-and storefront.id in (:storefront_ids)
+and storefront.id in :storefront_ids
+and camp.status not in ("draft",'ended','INELIGIBLE')
 group by camp.id, month(pfm.created_at)
