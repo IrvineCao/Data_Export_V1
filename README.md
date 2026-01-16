@@ -10,8 +10,6 @@ This project was built with a focusing on reproducibility, modularity, and real-
 
 ## Problem Statement
 
-In many organizations, user frequently need to:
-
 * Respond to ad-hoc data requests
 * Export large datasets for reporting
 * Re-run similar SQL queries with different parameters
@@ -47,26 +45,3 @@ Manual querying and exporting can be time-consuming, error-prone, and difficult 
 
 * **Reusable & Scalable Design**
   The structure allows analysts to easily add new queries, data sources, or export logic without rewriting the entire pipeline.
-
----
-
-## Tech Stack
-
-* **Python** – scripting and automation
-* **SQL** – data querying and filtering
-* **Relational Databases** – structured data source
-* **File-based Export** – supports analytics and reporting workflows
-
----
-
-## Project Structure
-
-```
-Data_Export_V1/
-├── data_logic/      # Data processing and export logic
-├── sql/             # SQL queries used for data extraction
-├── utils/           # Utility and helper functions
-├── pages/           # Execution or workflow-related modules
-├── main.py          # Main entry point
-└── README.md
-```
